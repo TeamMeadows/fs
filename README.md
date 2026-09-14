@@ -33,6 +33,8 @@ print(isOk)
 ### Installation
 1. Install [Atomic Framework](https://github.com/TeamMeadows/atomic-framework)
 2. Download Meadows FS from the table below and put downloaded file in `garrysmod/lua/bin/`. 
+3. `Optional` [Download types](.types) for Lua Language server (EmmyLua2/LuaLS)
+
 ## Downloads
 | Architecture | Download                                                                                           |
 |--------------|----------------------------------------------------------------------------------------------------|

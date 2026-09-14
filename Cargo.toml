@@ -9,5 +9,5 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 anyhow = "1.0.104"
-atomicframework_api = { path = "../atomicframework_api", features=["debug"] }
+atomicframework_api = "0.1.1"
 rglua = "3.0.0"

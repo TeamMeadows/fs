@@ -10,7 +10,9 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
 name = "atomicframework_api"
-version = "0.1.0"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f6fdf29085d010a0d998fe2ec3c94a0609d5cf7ca56c37ede9cbaf364b67041"
 dependencies = [
  "anyhow",
  "rglua",

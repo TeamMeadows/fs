@@ -1,0 +1,136 @@
+# Based on
+# https://github.com/autumngmod/gm_maskfs/blob/master/.github/workflows/build.yml
+
+name: MeadowsFS build & release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name (example: v1.2.3)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  TAG_NAME: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  build-linux32:
+    name: Build Linux x32
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install 32-bit dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib g++-multilib libc6-dev-i386 \
+                                 libssl-dev:i386 pkg-config:i386
+
+      - name: Install Rust toolchain
+        run: |
+          rustup install nightly
+          rustup target add i686-unknown-linux-gnu
+
+      - name: Build
+        env:
+          OPENSSL_LIB_DIR: /usr/lib/i386-linux-gnu
+          OPENSSL_INCLUDE_DIR: /usr/include/openssl
+          PKG_CONFIG_PATH: /usr/lib/i386-linux-gnu/pkgconfig
+        run: cargo build --release --target i686-unknown-linux-gnu
+
+      - name: Rename file
+        run: |
+          cp target/i686-unknown-linux-gnu/release/libmeadows_fs.so gmsv_meadows_fs_linux.dll
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gmsv_meadows_fs_linux.dll
+          tag_name: ${{ env.TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-linux64:
+    name: Build Linux x64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: |
+          rustup install nightly
+          rustup target add x86_64-unknown-linux-gnu
+
+      - name: Build
+        run: cargo build --release --target x86_64-unknown-linux-gnu
+
+      - name: Rename file
+        run: |
+          cp target/x86_64-unknown-linux-gnu/release/libmeadows_fs.so gmsv_meadows_fs_linux64.dll
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gmsv_meadows_fs_linux64.dll
+          tag_name: ${{ env.TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-win32:
+    name: Build Windows x32
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: |
+          rustup install nightly
+          rustup target add i686-pc-windows-msvc
+
+      - name: Build
+        run: cargo build --release --target i686-pc-windows-msvc
+
+      - name: Rename file
+        run: |
+          copy target\i686-pc-windows-msvc\release\meadows_fs.dll gmsv_meadows_fs_win32.dll
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gmsv_meadows_fs_win32.dll
+          tag_name: ${{ env.TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-win64:
+    name: Build Windows x64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: |
+          rustup install nightly
+          rustup target add x86_64-pc-windows-msvc
+
+      - name: Build
+        run: cargo build --release --target x86_64-pc-windows-msvc
+
+      - name: Rename file
+        run: |
+          copy target\x86_64-pc-windows-msvc\release\meadows_fs.dll gmsv_meadows_fs_win64.dll
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gmsv_meadows_fs_win64.dll
+          tag_name: ${{ env.TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
